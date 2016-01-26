@@ -1,0 +1,80 @@
+﻿<Window x:Class="w20620.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:w20620="clr-namespace:w20620"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+        xmlns:converter="clr-namespace:w20620.Converter"
+        Title="MainWindow" Height="550" Width="550" Margin="0" Padding="0"  ResizeMode="NoResize"
+		AllowsTransparency="True" BorderThickness="0" WindowStyle="None" IsHitTestVisible="False"
+		ShowInTaskbar="False"
+		Background="Transparent" Topmost="True" WindowStartupLocation="Manual" Loaded="Window_Loaded"
+		DataContext="{DynamicResource Model}">
+	<Window.Resources>
+		<ResourceDictionary>
+			<w20620:TimespanToDurationConverter x:Key="TimespanToDurationConverter"/>
+			<w20620:Model x:Key="Model" />
+			<converter:MultiplyConverter x:Key="MultiplyConverter" />
+			<Storyboard x:Key="transitionToFar">
+				<ColorAnimation Storyboard.TargetName="startColor" Storyboard.TargetProperty="Color" From="Transparent" To="#aaff0000" Duration="{Binding AnimationTime, Converter={StaticResource TimespanToDurationConverter}}" />
+				<DoubleAnimation Storyboard.TargetName="radientBrudh" Storyboard.TargetProperty="RadiusX" From="0" To="0.5" Duration="{Binding AnimationTime, Converter={StaticResource TimespanToDurationConverter}}" >
+					<DoubleAnimation.EasingFunction>
+						<SineEase EasingMode="EaseIn" />
+					</DoubleAnimation.EasingFunction>
+				</DoubleAnimation>
+				<DoubleAnimation Storyboard.TargetName="radientBrudh" Storyboard.TargetProperty="RadiusY" From="0" To="0.5" Duration="{Binding AnimationTime, Converter={StaticResource TimespanToDurationConverter}}" >
+					<DoubleAnimation.EasingFunction>
+						<SineEase EasingMode="EaseIn" />
+					</DoubleAnimation.EasingFunction>
+				</DoubleAnimation>
+				<ColorAnimation Storyboard.TargetName="startColor" Storyboard.TargetProperty="Color" BeginTime="{Binding AnimationTime}" To="#aa00ff00" Duration="{Binding FarTime, Converter={StaticResource TimespanToDurationConverter}}"/>
+
+				<DoubleAnimation Storyboard.TargetName="radientBrudh" Storyboard.TargetProperty="RadiusX" To="0.5" BeginTime="{Binding AnimationTime}" Duration="{Binding AnimationTime, Converter={StaticResource TimespanToDurationConverter}}" >
+					<DoubleAnimation.EasingFunction>
+						<SineEase EasingMode="EaseIn" />
+					</DoubleAnimation.EasingFunction>
+				</DoubleAnimation>
+				<DoubleAnimation Storyboard.TargetName="radientBrudh" Storyboard.TargetProperty="RadiusY" To="0.5" BeginTime="{Binding AnimationTime}" Duration="{Binding AnimationTime, Converter={StaticResource TimespanToDurationConverter}}" >
+					<DoubleAnimation.EasingFunction>
+						<SineEase EasingMode="EaseIn" />
+					</DoubleAnimation.EasingFunction>
+				</DoubleAnimation>
+			</Storyboard>
+			<Storyboard x:Key="transitionToScreen">
+				<DoubleAnimation Storyboard.TargetName="radientBrudh" Storyboard.TargetProperty="RadiusX" To="0" Duration="{Binding AnimationTime, Converter={StaticResource TimespanToDurationConverter}}" >
+					<DoubleAnimation.EasingFunction>
+						<SineEase EasingMode="EaseIn" />
+					</DoubleAnimation.EasingFunction>
+				</DoubleAnimation>
+				<DoubleAnimation Storyboard.TargetName="radientBrudh" Storyboard.TargetProperty="RadiusY" To="0" Duration="{Binding AnimationTime, Converter={StaticResource TimespanToDurationConverter}}" >
+					<DoubleAnimation.EasingFunction>
+						<SineEase EasingMode="EaseIn" />
+					</DoubleAnimation.EasingFunction>
+				</DoubleAnimation>
+			</Storyboard>
+		</ResourceDictionary>
+	</Window.Resources>
+	<Grid Name="MainGrid">
+		<!--<Border Width="{Binding ActualWidth, ElementName=MainGrid}" Height="{Binding ActualHeight, ElementName=MainGrid, Converter={StaticResource MultiplyConverter}, ConverterParameter=2}">-->
+			<Border Margin="0 10 0 0">
+				<i:Interaction.Triggers>
+				<ei:DataTrigger Binding="{Binding IsScreenWatching}" Comparison="Equal" Value="True">
+					<ei:ControlStoryboardAction ControlStoryboardOption="Play" Storyboard="{StaticResource transitionToScreen}" />
+				</ei:DataTrigger>
+				<ei:DataTrigger Binding="{Binding IsScreenWatching}" Comparison="Equal" Value="False">
+					<ei:ControlStoryboardAction ControlStoryboardOption="Play" Storyboard="{StaticResource transitionToFar}" />
+				</ei:DataTrigger>
+			</i:Interaction.Triggers>
+			<Border.Background>
+				<RadialGradientBrush x:Name="radientBrudh" Center="0.5 0.5" GradientOrigin="0.5 0" RadiusX="0.5">
+					<RadialGradientBrush.GradientStops>
+						<GradientStop x:Name="startColor" Color="#aaff0000" Offset="0" />
+						<GradientStop Color="#08ff0000" Offset="0.8" />
+						<GradientStop Color="#00ff0000" Offset="0.9" />
+					</RadialGradientBrush.GradientStops>
+				</RadialGradientBrush>
+			</Border.Background>
+		</Border>
+		<w20620:CircularProgressBar HorizontalAlignment="Center" VerticalAlignment="Top" Radius="20" SegmentColor="{Binding Brush}" StrokeThickness="8" Percentage="{Binding Percent}" />
+	</Grid>
+</Window>
