@@ -5,48 +5,54 @@ using System.Windows.Interop;
 
 namespace w20620
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow : Window
-	{
-		public const int WS_EX_TRANSPARENT = 0x00000020;
-		public const int GWL_EXSTYLE = (-20);
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public const int WS_EX_TRANSPARENT = 0x00000020;
+        public const int GWL_EXSTYLE = (-20);
 
-		[DllImport("user32.dll")]
-		public static extern int GetWindowLong(IntPtr hwnd, int index);
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
 
-		[DllImport("user32.dll")]
-		public static extern int SetWindowLong(IntPtr hwnd, int index, int newStyle);
+            SetIsHitTestVisibile(this, false);
+        }
 
-		protected override void OnSourceInitialized(EventArgs e)
-		{
-			base.OnSourceInitialized(e);
+        public MainWindow()
+        {
+            InitializeComponent();
 
-			// Get this window's handle
-			IntPtr hwnd = new WindowInteropHelper(this).Handle;
+            this.Top = 0;
+        }
 
-			// Change the extended window style to include WS_EX_TRANSPARENT
-			int extendedStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-			SetWindowLong(hwnd, GWL_EXSTYLE, extendedStyle | WS_EX_TRANSPARENT);
-		}
+        private Model Model
+        {
+            get { return this.DataContext as Model; }
+        }
 
-		public MainWindow()
-		{
-			InitializeComponent();
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.Left = SystemParameters.PrimaryScreenWidth - this.ActualWidth / 2;
+            Model.IsScreenWatching = !Model.IsScreenWatching;
+        }
 
-			this.Top = 0;
-		}
+        public static void SetIsHitTestVisibile(Window window, bool isVisible)
+        {
+            IntPtr hwnd = new WindowInteropHelper(window).Handle;
 
-		private Model Model
-		{
-			get { return this.DataContext as Model; }
-		}
+            int currentExtendedStyle = Win32.Win32.GetWindowLong(hwnd, GWL_EXSTYLE);
+            int newStyle = currentExtendedStyle;
 
-		private void Window_Loaded(object sender, RoutedEventArgs e)
-		{
-			this.Left = SystemParameters.PrimaryScreenWidth - this.ActualWidth / 2;
-			Model.IsScreenWatching = !Model.IsScreenWatching;
-		}
-	}
+            newStyle = isVisible
+                ? newStyle | WS_EX_TRANSPARENT
+                : newStyle & ~WS_EX_TRANSPARENT;
+
+            if (newStyle != currentExtendedStyle)
+            {
+                Win32.Win32.SetWindowLong(hwnd, GWL_EXSTYLE, newStyle);
+            }
+        }
+    }
 }

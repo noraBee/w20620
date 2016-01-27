@@ -58,6 +58,7 @@
     </ApplicationDefinition>
     <Compile Include="Converter\MultiplyConverter.cs" />
     <Compile Include="TimespanToDurationCOnverter.cs" />
+    <Compile Include="Win32\Win32.cs" />
     <Page Include="CircularProgressBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
